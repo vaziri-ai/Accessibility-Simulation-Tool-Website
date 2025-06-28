@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Persona Selection – Accessibility Simulation Tool</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav aria-label="Main Navigation">
+    <div class="nav-left">
+      <div class="nav-logo" aria-label="Accessibility Simulation Tool Logo" tabindex="0">
+        <span aria-hidden="true">🧑‍🦽</span>
+      </div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="#simulation">Simulation</a>
+        <a href="#learn">Learn</a>
+        <a href="#about">About Us</a>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <a href="#register">Register</a>
+      <a href="#signin" class="sign-in">Sign In</a>
+    </div>
+  </nav>
+  <main class="persona-main">
+    <section class="hero persona-hero" aria-labelledby="hero-title">
+      <h1 class="hero-title" id="hero-title">Accessibility Simulation Tool</h1>
+      <div class="hero-subtitle">Choose Persona</div>
+      <div class="persona-instructions">
+        <span>Choose a user persona to simulate how they experience your site:</span>
+        <span class="info-icon" tabindex="0" aria-label="Info" aria-describedby="info-tooltip">
+          ℹ️
+          <span class="tooltip" id="info-tooltip" role="tooltip">
+            Select a persona to see how different users may experience the web. This helps you design more inclusively.
+          </span>
+        </span>
+      </div>
+    </section>
+    <form class="persona-form" id="persona-form" autocomplete="off" aria-label="Persona Selection">
+      <fieldset class="persona-grid" aria-label="Persona Options">
+        <legend class="sr-only">Personas</legend>
+        <label class="persona-card">
+          <input type="radio" name="persona" value="Low Literacy – Age 65+" checked>
+          <span class="persona-card-content">
+            <span class="persona-card-title">Low Literacy– Age 65+</span>
+            <span class="persona-card-desc">may have difficulty with reading long or complex texts</span>
+          </span>
+        </label>
+        <label class="persona-card">
+          <input type="radio" name="persona" value="Cognitive Load">
+          <span class="persona-card-content">
+            <span class="persona-card-title">Cognitive Load</span>
+            <span class="persona-card-desc">may find it hard to focus in busy environment</span>
+          </span>
+        </label>
+        <label class="persona-card">
+          <input type="radio" name="persona" value="Visual Impairment">
+          <span class="persona-card-content">
+            <span class="persona-card-title">Visual Impairment</span>
+            <span class="persona-card-desc">may struggle to read small text or see low-contrast elements</span>
+          </span>
+        </label>
+        <label class="persona-card">
+          <input type="radio" name="persona" value="Autism Spectrum">
+          <span class="persona-card-content">
+            <span class="persona-card-title">Autism Spectrum</span>
+            <span class="persona-card-desc">May become overwhelmed by animations, or lack of consistency.</span>
+          </span>
+        </label>
+        <label class="persona-card">
+          <input type="radio" name="persona" value="Motor Impairment">
+          <span class="persona-card-content">
+            <span class="persona-card-title">Motor Impairment</span>
+            <span class="persona-card-desc">May struggle with small click targets due to limited hand mobility.</span>
+          </span>
+        </label>
+        <label class="persona-card">
+          <input type="radio" name="persona" value="Hearing Impairment">
+          <span class="persona-card-content">
+            <span class="persona-card-title">Hearing Impairment</span>
+            <span class="persona-card-desc">May miss audio content or instructions without captions or transcripts.</span>
+          </span>
+        </label>
+      </fieldset>
+      <div class="persona-actions">
+        <button type="button" class="primary-btn" id="see-persona-btn">See How This Persona Experiences the Web</button>
+      </div>
+    </form>
+  </main>
+  <button class="chatbot-bubble" id="chatbot-bubble" aria-label="Open Chatbot" title="Open Chatbot">
+    🤖
+  </button>
+  <script>
+    // Tooltip accessibility: allow keyboard focus
+    document.querySelectorAll('.info-icon').forEach(function(icon) {
+      icon.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          icon.querySelector('.tooltip').style.display = 'block';
+        }
+        if (e.key === 'Escape') {
+          icon.querySelector('.tooltip').style.display = 'none';
+        }
+      });
+      icon.addEventListener('blur', function() {
+        icon.querySelector('.tooltip').style.display = 'none';
+      });
+    });
+    // Persona selection and redirect
+    document.getElementById('see-persona-btn').addEventListener('click', function() {
+      const persona = document.querySelector('input[name="persona"]:checked').value;
+      const personaParam = encodeURIComponent(persona);
+      // Get website from current URL query string
+      const urlParams = new URLSearchParams(window.location.search);
+      const website = urlParams.get('website');
+      let target = `simulation_view.html?persona=${personaParam}`;
+      if (website) {
+        target += `&website=${encodeURIComponent(website)}`;
+      }
+      window.location.href = target;
+    });
+    // Chatbot popup logic
+    const chatbotBubble = document.getElementById('chatbot-bubble');
+    chatbotBubble.addEventListener('click', function() {
+      const persona = document.querySelector('input[name="persona"]:checked').value;
+      const personaParam = encodeURIComponent(persona);
+      window.open(
+        `https://accessibility-simulation-tool-website-chat-bot.streamlit.app/?persona=${personaParam}`,
+        'chatbotWindow',
+        'width=400,height=650,resizable=yes,scrollbars=yes,status=no,noopener,noreferrer'
+      );
+    });
+    // Screen reader only class
+    const style = document.createElement('style');
+    style.innerHTML = `.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }`;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html> 

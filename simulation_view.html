@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulation View – Accessibility Simulation Tool</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav aria-label="Main Navigation">
+    <div class="nav-left">
+      <div class="nav-logo" aria-label="Accessibility Simulation Tool Logo" tabindex="0">
+        <span aria-hidden="true">🧑‍🦽</span>
+      </div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="#simulation">Simulation</a>
+        <a href="#learn">Learn</a>
+        <a href="#about">About Us</a>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <a href="#register">Register</a>
+      <a href="#signin" class="sign-in">Sign In</a>
+    </div>
+  </nav>
+  <main class="simulation-main">
+    <section class="simulation-header" aria-labelledby="sim-title">
+      <h1 class="hero-title" id="sim-title">Accessibility Simulation Tool</h1>
+      <div class="sim-persona-desc" id="sim-persona-desc"></div>
+    </section>
+    <div class="simulation-2col">
+      <section class="simulated-preview-section">
+        <div class="simulated-view-container">
+          <div class="simulated-view" id="simulated-view">
+            <img src="meander-screenshot.jpg" alt="Website screenshot placeholder" class="simulated-img" />
+            <div id="overlay" aria-hidden="true"></div>
+          </div>
+        </div>
+      </section>
+      <aside class="sim-issues-panel-card" aria-label="Detected Issues">
+        <h2 class="issues-title">Detected Issues:</h2>
+        <div class="graphic-issues-list" id="persona-issues-list"></div>
+        <div class="sim-intensity-section">
+          <label for="sim-intensity" class="sim-intensity-label">Simulation Intensity</label>
+          <input type="range" id="sim-intensity" class="sim-intensity-slider" min="0" max="2" step="1" value="1" aria-valuemin="0" aria-valuemax="2" aria-valuenow="1" aria-label="Simulation Intensity" />
+          <div class="sim-intensity-labels">
+            <span>Mild</span>
+            <span>Moderate</span>
+            <span>Severe</span>
+          </div>
+        </div>
+        <div class="sim-view-footer-btns" style="display:flex;flex-direction:column;gap:1rem;margin-top:1.5rem;align-items:flex-end;">
+          <button class="primary-btn" id="see-tips-btn" aria-label="See Improvement Tips">See Improvement Tips</button>
+          <a href="#" class="secondary-btn" id="back-persona-btn" aria-label="Back to Persona Selection">Back To Persona Selection</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <footer class="sim-footer">
+    Your selection stays local. No personal data is stored
+  </footer>
+  <button class="chatbot-bubble" id="chatbot-bubble" aria-label="Open Chatbot" title="Open Chatbot">
+    🤖
+  </button>
+  <script>
+    // --- Query param logic and redirect if no website ---
+    function getParamsFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return {
+        website: urlParams.get('website') || '',
+        persona: urlParams.get('persona') || 'Low Literacy'
+      };
+    }
+    const params = getParamsFromURL();
+    const persona = params.persona;
+    const website = params.website;
+    if (!website) {
+      alert('Please enter a website address to simulate.');
+      window.location.href = 'index.html?error=missing_website';
+    }
+    // --- Persona label ---
+    document.getElementById('sim-persona-desc').textContent = `You are now viewing a website as experienced by someone with ${persona}`;
+
+    // --- Simulation Intensity Overlay ---
+    const overlay = document.getElementById('overlay');
+    const simIntensity = document.getElementById('sim-intensity');
+    function updateOverlay(val) {
+      // Example: Cognitive Load
+      if (persona.toLowerCase().includes('cognitive')) {
+        if (val == 0) {
+          overlay.style.backdropFilter = 'blur(2px)';
+          overlay.style.background = 'rgba(255,255,255,0.05)';
+        } else if (val == 1) {
+          overlay.style.backdropFilter = 'blur(5px)';
+          overlay.style.background = 'rgba(255,255,255,0.13)';
+        } else {
+          overlay.style.backdropFilter = 'blur(10px)';
+          overlay.style.background = 'rgba(255,255,255,0.22)';
+        }
+      } else {
+        // Default: no overlay
+        overlay.style.backdropFilter = 'none';
+        overlay.style.background = 'none';
+      }
+    }
+    simIntensity.addEventListener('input', function() {
+      updateOverlay(this.value);
+    });
+    updateOverlay(simIntensity.value);
+
+    // --- Detected Issues by Persona ---
+    const personaIssues = {
+      'Low Literacy – Age 65+': [
+        { label: 'Complex wording' },
+        { label: 'Missing icons for categories' }
+      ],
+      'Cognitive Load': [
+        { label: 'Too many buttons' },
+        { label: 'Overloaded dropdowns' }
+      ],
+      'Visual Impairment': [
+        { label: 'Low contrast text' },
+        { label: 'Tiny clickable icons' }
+      ],
+      'Autism Spectrum': [
+        { label: 'Distracting background' },
+        { label: 'Inconsistent icon use' }
+      ],
+      'Motor Impairment': [
+        { label: 'Small touch targets' },
+        { label: 'No focus outline' }
+      ],
+      'Non-Native Speakers': [
+        { label: 'Dutch-only content' },
+        { label: 'Difficult vocabulary' }
+      ]
+    };
+    function getPersonaKey(p) {
+      // Only return exact match
+      if (!p) return null;
+      const keys = Object.keys(personaIssues);
+      return keys.find(k => k === p) || null;
+    }
+    const personaKey = getPersonaKey(persona);
+    const issuesToShow = personaKey ? personaIssues[personaKey] : [];
+    const issuesListDiv = document.getElementById('persona-issues-list');
+    if (issuesToShow.length) {
+      issuesListDiv.innerHTML = issuesToShow.map((issue, idx) => `
+        <div class="graphic-issue-row">
+          <span class="graphic-issue-icon" aria-hidden="true">❗️</span>
+          <div class="graphic-issue-content">
+            <div class="graphic-issue-title">${issue.label}</div>
+            <a class="graphic-issue-link" href="#" data-why-matters-link="true" data-idx="${idx}" data-issue-label="${encodeURIComponent(issue.label)}">Why it matters?</a>
+          </div>
+        </div>
+      `).join('');
+      // Add window.open handler for all 'Why it matters?' links
+      document.querySelectorAll('[data-why-matters-link]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const issueLabel = link.getAttribute('data-issue-label');
+          const personaParam = encodeURIComponent(persona || 'low literacy');
+          const url = `https://accessibility-simulation-tool-twhc4g6llusz9katkjqn2a.streamlit.app/?persona=${personaParam}&issue=${issueLabel}`;
+          window.open(
+            url,
+            'whyItMattersWindow',
+            'width=400,height=650,resizable=yes,scrollbars=yes,status=no,noopener,noreferrer'
+          );
+        });
+      });
+    } else {
+      issuesListDiv.innerHTML = '<div class="no-issues">No detected issues for this persona.</div>';
+    }
+
+    // Chatbot popup logic (like other pages)
+    const chatbotBubble = document.getElementById('chatbot-bubble');
+    chatbotBubble.addEventListener('click', function() {
+      const personaParam = encodeURIComponent(persona || 'low literacy');
+      window.open(
+        `https://accessibility-simulation-tool-website-chat-bot.streamlit.app/?persona=${personaParam}`,
+        'chatbotWindow',
+        'width=400,height=650,resizable=yes,scrollbars=yes,status=no,noopener,noreferrer'
+      );
+    });
+
+    // Add navigation for new buttons
+    document.getElementById('see-tips-btn').addEventListener('click', function() {
+      const personaParam = encodeURIComponent(persona || 'Cognitive Load');
+      window.location.href = `improvement_tips.html?persona=${personaParam}`;
+    });
+    document.getElementById('back-persona-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      const websiteParam = encodeURIComponent(website || '');
+      window.location.href = `persona-selection.html?website=${websiteParam}`;
+    });
+  </script>
+</body>
+</html>

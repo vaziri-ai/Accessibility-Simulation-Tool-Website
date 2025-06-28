@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Export Accessibility Simulation Report</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav aria-label="Main Navigation">
+    <div class="nav-left">
+      <div class="nav-logo" aria-label="Accessibility Simulation Tool Logo" tabindex="0">
+        <span aria-hidden="true">🧑‍🦽</span>
+      </div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="#simulation">Simulation</a>
+        <a href="#learn">Learn</a>
+        <a href="#about">About Us</a>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <a href="#register">Register</a>
+      <a href="#signin" class="sign-in">Sign In</a>
+    </div>
+  </nav>
+  <main class="simulation-main" style="min-height:80vh;">
+    <h1 class="hero-title" style="text-align:center;">Export Accessibility Simulation Report</h1>
+    <section aria-label="Report Summary" style="text-align:center;margin-bottom:2rem;">
+      <div id="summary-block" style="color:#888;font-size:1.25rem;margin-bottom:0.5rem;">
+        Persona: <span id="persona-name" style="font-weight:600;"></span><br>
+        <span style="font-size:1.1rem;">5 issues found</span><br>
+        <span style="font-size:1.1rem;">3 improvements made</span>
+      </div>
+    </section>
+    <section aria-label="Add Message to Report" style="display:flex;flex-direction:column;align-items:center;gap:1.2rem;max-width:480px;margin:0 auto 2rem auto;">
+      <label for="report-message" style="font-size:1.1rem;font-weight:600;margin-bottom:0.3rem;">Write your message here to add to your report</label>
+      <textarea id="report-message" aria-label="Write your message here to add to your report" placeholder="Write your message here to add to your report" rows="4" style="width:100%;max-width:400px;min-width:220px;padding:1rem;border-radius:1rem;border:1.5px solid #d1d5db;font-size:1.1rem;resize:vertical;"></textarea>
+      <div style="display:flex;align-items:center;gap:0.6rem;width:100%;max-width:400px;">
+        <input type="checkbox" id="include-ai-summary" checked aria-label="Include AI Summary in Report" style="width:1.2rem;height:1.2rem;accent-color:#6c47d7;">
+        <label for="include-ai-summary" style="font-size:1.05rem;">Include AI Summary in Report</label>
+      </div>
+    </section>
+    <section aria-label="System Feedback" style="text-align:center;margin-bottom:2rem;">
+      <div style="color:#3734a9;font-weight:600;font-size:1.1rem;">Your Report is Ready</div>
+      <div style="color:#444;font-size:1.05rem;">Your report includes all tips and flagged issues from the simulation</div>
+    </section>
+    <section aria-label="Export Actions" style="display:flex;flex-direction:column;align-items:center;gap:1.2rem;">
+      <div style="display:flex;flex-wrap:wrap;gap:2rem;justify-content:center;width:100%;max-width:900px;">
+        <button class="primary-btn" style="font-size:1.25rem;padding:1.2rem 2.5rem;border-radius:2rem;min-width:210px;" aria-label="Download PDF">Download PDF</button>
+        <button class="primary-btn" style="font-size:1.25rem;padding:1.2rem 2.5rem;border-radius:2rem;min-width:210px;" aria-label="Email Report">Email Report</button>
+        <button class="primary-btn" style="font-size:1.25rem;padding:1.2rem 2.5rem;border-radius:2rem;min-width:210px;" aria-label="Run Another Simulation">Run Another Simulation</button>
+      </div>
+      <a href="#" class="secondary-btn" style="background:none;color:#3734a9;text-decoration:underline;font-size:1.05rem;padding:0.3rem 0.7rem;border:none;box-shadow:none;" aria-label="Preview report before sending">Preview report before sending</a>
+    </section>
+  </main>
+  <footer style="text-align:center;color:#888;font-size:1.05rem;margin:2.5rem 0 1rem 0;">
+    No personal data is stored or shared
+  </footer>
+  <script>
+    // Fetch persona from URL
+    function getPersonaFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('persona') || 'Cognitive Load';
+    }
+    document.getElementById('persona-name').textContent = getPersonaFromURL();
+  </script>
+</body>
+</html> 

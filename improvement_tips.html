@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Improvement Tips – Accessibility Simulation Tool</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav aria-label="Main Navigation">
+    <div class="nav-left">
+      <div class="nav-logo" aria-label="Accessibility Simulation Tool Logo" tabindex="0">
+        <span aria-hidden="true">🧑‍🦽</span>
+      </div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="#simulation">Simulation</a>
+        <a href="#learn">Learn</a>
+        <a href="#about">About Us</a>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <a href="#register">Register</a>
+      <a href="#signin" class="sign-in">Sign In</a>
+    </div>
+  </nav>
+  <main class="simulation-main" style="min-height:80vh;">
+    <h1 class="hero-title" id="tips-title" tabindex="0">Improvement Tips for: <span id="persona-name"></span></h1>
+    <div class="simulation-2col" style="align-items:flex-start;">
+      <!-- Left: Blurred Preview with Severity Markers -->
+      <section class="simulated-preview-section" aria-label="Fix Preview">
+        <h2 class="sim-section-title" style="color:#888;font-size:2rem;">Fix Preview</h2>
+        <div class="simulated-view-container" style="position:relative;">
+          <img src="meander-screenshot.jpg" alt="Simulated website preview" class="simulated-img" style="filter:blur(6px) contrast(0.85);" />
+        </div>
+      </section>
+      <!-- Right: Issues List -->
+      <aside class="sim-issues-panel-card" aria-label="Improvement Tips List">
+        <h2 class="issues-title">Improvement Tips</h2>
+        <div class="issues-list" id="tips-issues-list">
+          <!-- Issues will be injected here by JS -->
+        </div>
+        <div class="sim-footer-btns" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem;margin-top:1.5rem;">
+          <button class="primary-btn" id="export-report-btn" aria-label="Export accessibility improvement report" style="font-size:0.98rem;padding:0.5rem 1.3rem;min-width:unset;">Export Report</button>
+          <a href="simulation_view.html" class="secondary-btn" id="back-btn" aria-label="Back to Simulation View" style="font-size:0.98rem;padding:0.2rem 0.5rem;min-width:unset;background:none;box-shadow:none;color:#3734a9;text-decoration:underline;">Back To Simulation View</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+  <script>
+    // --- Fetch persona from URL ---
+    function getPersonaFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('persona') || 'Cognitive Load';
+    }
+    const persona = getPersonaFromURL();
+    document.getElementById('persona-name').textContent = persona;
+    document.getElementById('tips-title').setAttribute('aria-label', `Improvement Tips for: ${persona}`);
+
+    // --- Example issues data (should be replaced with real data) ---
+    const issues = [
+      {
+        label: 'Long search placeholder text',
+        location: 'Search Field (Header)',
+        severity: 'High',
+        why: 'Long placeholder text can overwhelm users with cognitive load, making it harder to focus on the main task.',
+        fix: 'Use a concise, clear placeholder such as "Search...". Avoid full sentences or multiple concepts.',
+        code: '<input type="search" placeholder="Search..." aria-label="Search">'
+      },
+      {
+        label: 'Unclear button label',
+        location: 'Main Navigation',
+        severity: 'Medium',
+        why: 'Ambiguous button labels can confuse users, especially those with cognitive or language challenges.',
+        fix: 'Use descriptive button text like "Contact Us" instead of generic labels like "Click here".',
+        code: '<button>Contact Us</button>'
+      }
+    ];
+
+    // --- Render issues ---
+    function renderIssues() {
+      const list = document.getElementById('tips-issues-list');
+      list.innerHTML = '';
+      issues.forEach((issue, idx) => {
+        const issueId = `issue-${idx}`;
+        const fixId = `fix-${idx}`;
+        const whyId = `why-${idx}`;
+        const sevColor = issue.severity === 'High' ? '#e53935' : issue.severity === 'Medium' ? '#fbc02d' : '#43a047';
+        const sevIcon = issue.severity === 'High' ? '❗' : issue.severity === 'Medium' ? '⚠️' : 'ℹ️';
+        const sevBg = issue.severity === 'High' ? 'rgba(229,57,53,0.12)' : issue.severity === 'Medium' ? 'rgba(251,192,45,0.12)' : 'rgba(67,160,71,0.12)';
+        const item = document.createElement('div');
+        item.className = 'graphic-issue-row';
+        item.setAttribute('role', 'region');
+        item.setAttribute('aria-labelledby', issueId);
+        item.style.background = sevBg;
+        item.style.display = 'flex';
+        item.style.alignItems = 'flex-start';
+        item.style.gap = '1.2rem';
+        item.style.padding = '1.2rem 1.5rem 1.2rem 1.5rem';
+        item.innerHTML = `
+          <span class="graphic-issue-icon" aria-hidden="true" style="color:${sevColor};font-size:2.2rem;flex-shrink:0;align-self:center;">${sevIcon}</span>
+          <div class="graphic-issue-content" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:0.3rem;">
+            <div class="graphic-issue-title" id="${issueId}" style="font-size:1rem;font-weight:700;margin-bottom:0.1rem;color:#3734a9;">${issue.label}</div>
+            <div class="issue-meta" style="display:flex;gap:0.5rem;align-items:center;font-size:0.97rem;color:#757575;flex-wrap:nowrap;">
+              <span class="issue-location" style="background:none;color:#757575;padding:0 0.7rem 0 0;font-size:0.85rem;min-width:120px;display:inline-block;">${issue.location}</span>
+              <span class="issue-severity" style="background:none;color:${sevColor};font-weight:600;">|</span>
+              <a href="#" class="issue-why-link" data-why-link="true" data-issue-label="${encodeURIComponent(issue.label)}" tabindex="0" style="color:#1976d2;text-decoration:underline;font-size:0.85rem;white-space:nowrap;">Why This Matters?</a>
+            </div>
+          </div>
+          <div class="issue-actions" style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;min-width:140px;">
+            <button class="primary-btn small-btn" aria-label="How to fix ${issue.label}" data-fix-link="true" data-issue-label="${encodeURIComponent(issue.label)}" tabindex="0" style="font-size:0.93rem;padding:0.25rem 0.9rem;min-width:90px;background:#c62828;">How To Fix</button>
+            <label class="fix-preview-label" style="display:flex;align-items:center;gap:0.3rem;font-size:0.97rem;cursor:pointer;">
+              <input type="checkbox" style="accent-color:#6c47d7;width:1.1rem;height:1.1rem;" disabled checked tabindex="-1" aria-hidden="true" />
+              <span style="color:#757575;">Fix Preview</span>
+            </label>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+      // Add accessible event listeners
+      document.querySelectorAll('[data-why-link]').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const issueLabel = link.getAttribute('data-issue-label');
+          const personaParam = encodeURIComponent(persona || 'Cognitive Load');
+          const url = `https://accessibility-simulation-tool-twhc4g6llusz9katkjqn2a.streamlit.app/?persona=${personaParam}&issue=${issueLabel}`;
+          window.open(
+            url,
+            'whyItMattersWindow',
+            'width=600,height=800,resizable=yes,scrollbars=yes,status=no,noopener,noreferrer'
+          );
+        });
+      });
+      document.querySelectorAll('[data-fix-link]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const issueLabel = btn.getAttribute('data-issue-label');
+          const personaParam = encodeURIComponent(persona || 'Cognitive Load');
+          const url = `https://accessibility-simulation-tool-twhc4g6llusz9katkjqn2a.streamlit.app/?persona=${personaParam}&issue=${issueLabel}&fix=1`;
+          window.open(
+            url,
+            'howToFixWindow',
+            'width=600,height=800,resizable=yes,scrollbars=yes,status=no,noopener,noreferrer'
+          );
+        });
+      });
+    }
+    renderIssues();
+
+    // Export Report button navigation
+    document.getElementById('export-report-btn').addEventListener('click', function() {
+      const personaParam = encodeURIComponent(persona);
+      window.location.href = `Export_Report.html?persona=${personaParam}`;
+    });
+  </script>
+</body>
+</html> 

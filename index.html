@@ -31,9 +31,10 @@
       <div class="hero-desc">This tool helps simulate how people with different accessibility needs experience your site. You'll choose a persona and receive tips for improvement.</div>
       <form class="hero-form" autocomplete="off" onsubmit="return false;">
         <label for="website-input" class="sr-only">Website Address</label>
-        <input id="website-input" type="text" placeholder="Enter your Website Address Here" aria-label="Enter your Website Address Here" />
+        <input id="website-input" type="text" placeholder="Enter your Website Address Here" aria-label="Enter your Website Address Here" required value="https://wijhuisartsen.nl/" />
         <span class="search-icon" aria-hidden="true">🔍</span>
       </form>
+      <div id="website-error" role="alert" aria-live="assertive" style="display:none;color:#b91c1c;font-size:1rem;margin-top:0.5rem;"></div>
       <div class="hero-actions">
         <button type="button" id="start-sim-btn">Start Accessibility Simulation</button>
         <span class="info-icon" tabindex="0" aria-label="Info" aria-describedby="info-tooltip">
@@ -66,25 +67,9 @@
   <footer>
     This tool follows WCAG 2.2 guidelines
   </footer>
-<button class="chatbot-bubble" id="chatbot-bubble" aria-label="Open Chatbot" title="Open Accessibility Chatbot">
+  <button class="chatbot-bubble" id="chatbot-bubble" aria-label="Open Chatbot" title="Open Chatbot">
     🤖
   </button>
-  <!-- JavaScript to open popup -->
-  <script>
-    document.getElementById("chatbot-bubble").addEventListener("click", function () {
-      const url = "https://accessibility-simulation-tool-website-chat-bot.streamlit.app/";
-      const width = 400;
-      const height = 650;
-      const left = window.innerWidth - width - 20;
-      const top = window.innerHeight - height - 20;
-  
-      window.open(
-        url,
-        "ChatbotWindow",
-        `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
-      );
-    });
-  </script>
   <script>
     // Tooltip accessibility: allow keyboard focus
     document.querySelectorAll('.info-icon').forEach(function(icon) {
@@ -103,42 +88,49 @@
     });
     // Chatbot modal logic
     const chatbotBubble = document.getElementById('chatbot-bubble');
-    const chatbotModal = document.getElementById('chatbot-modal');
-    const chatbotClose = document.getElementById('chatbot-close');
-    const chatbotIframe = document.getElementById('chatbot-iframe');
-    function getPersonaParam() {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get('persona') || 'low+literacy';
-    }
-    function updateChatbotIframe() {
-      const persona = getPersonaParam();
-      chatbotIframe.src = `http://localhost:8501?persona=${encodeURIComponent(persona)}`;
-    }
     chatbotBubble.addEventListener('click', function() {
-      updateChatbotIframe();
-      chatbotModal.classList.add('active');
-      chatbotClose.focus();
-    });
-    chatbotClose.addEventListener('click', function() {
-      chatbotModal.classList.remove('active');
-      chatbotBubble.focus();
-    });
-    chatbotModal.addEventListener('click', function(e) {
-      if (e.target === chatbotModal) {
-        chatbotModal.classList.remove('active');
-        chatbotBubble.focus();
-      }
-    });
-    document.addEventListener('keydown', function(e) {
-      if (chatbotModal.classList.contains('active') && e.key === 'Escape') {
-        chatbotModal.classList.remove('active');
-        chatbotBubble.focus();
-      }
+      const urlParams = new URLSearchParams(window.location.search);
+      let persona = urlParams.get('persona') || 'low literacy';
+      const personaParam = encodeURIComponent(persona);
+      window.open(
+        `https://accessibility-simulation-tool-website-chat-bot.streamlit.app/?persona=${personaParam}`,
+        'chatbotWindow',
+        'width=400,height=650,resizable=yes,scrollbars=yes,status=no,noopener,noreferrer'
+      );
     });
     // Screen reader only class
     const style = document.createElement('style');
     style.innerHTML = `.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }`;
     document.head.appendChild(style);
+    document.getElementById('start-sim-btn').addEventListener('click', function() {
+      const input = document.getElementById('website-input');
+      const errorDiv = document.getElementById('website-error');
+      const url = input.value.trim();
+      // Validate URL
+      if (!url || !(url.startsWith('http://') || url.startsWith('https://'))) {
+        errorDiv.textContent = 'Please enter a valid website address (must start with http:// or https://).';
+        errorDiv.style.display = 'block';
+        input.setAttribute('aria-invalid', 'true');
+        input.focus();
+        return;
+      }
+      errorDiv.style.display = 'none';
+      input.removeAttribute('aria-invalid');
+      // Get persona from localStorage or URL
+      let persona = null;
+      try {
+        persona = localStorage.getItem('selectedPersona');
+      } catch (e) {}
+      if (!persona) {
+        const urlParams = new URLSearchParams(window.location.search);
+        persona = urlParams.get('persona');
+      }
+      if (!persona) persona = 'Low Literacy';
+      const params = new URLSearchParams();
+      params.set('website', url);
+      if (persona) params.set('persona', persona);
+      window.location.href = `persona-selection.html?${params.toString()}`;
+    });
   </script>
 </body>
 </html>
