@@ -447,9 +447,27 @@
   <footer>
     This tool follows WCAG 2.2 guidelines
   </footer>
-  <button class="chatbot-bubble" onclick="window.open('https://accessibility-simulation-tool-website-chat-bot.streamlit.app/', '_blank')">
-  🤖
+  <!-- Chatbot Button -->
+  <button class="chatbot-bubble" id="chatbot-bubble" aria-label="Open Chatbot" title="Open Accessibility Chatbot">
+    🤖
   </button>
+  
+  <!-- JavaScript to open popup -->
+  <script>
+    document.getElementById("chatbot-bubble").addEventListener("click", function () {
+      const url = "https://accessibility-simulation-tool-website-chat-bot.streamlit.app/";
+      const width = 400;
+      const height = 650;
+      const left = window.innerWidth - width - 20;
+      const top = window.innerHeight - height - 20;
+  
+      window.open(
+        url,
+        "ChatbotWindow",
+        `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
+      );
+    });
+  </script>
   <script>
     // Tooltip accessibility: allow keyboard focus
     document.querySelectorAll('.info-icon').forEach(function(icon) {
