@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accessibility Simulation Tool</title>
+  <style>
+    :root {
+      --primary: #3b2676;
+      --secondary: #f5f5f7;
+      --accent: #4f46e5;
+      --text: #22223b;
+      --bg: #f8f9fa;
+      --shadow: 0 4px 24px rgba(60, 60, 90, 0.08);
+      --radius: 1.5rem;
+      --nav-height: 70px;
+      --card-width: 320px;
+      --card-gap: 2rem;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-height);
+      background: #e7e6f7;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 100;
+      padding: 0 2rem;
+    }
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .nav-logo {
+      width: 54px; height: 54px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-size: 2rem;
+      margin-right: 1rem;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.75rem;
+      transition: background 0.2s;
+    }
+    .nav-links a:hover, .nav-links a:focus {
+      background: #e0e7ff;
+      outline: none;
+    }
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .nav-actions a {
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--primary);
+      padding: 0.5rem 1rem;
+      border-radius: 0.75rem;
+      transition: background 0.2s;
+    }
+    .nav-actions .sign-in {
+      background: var(--primary);
+      color: #fff;
+      border-radius: 2rem;
+      padding: 0.5rem 2rem;
+      box-shadow: var(--shadow);
+      font-size: 1.1rem;
+      margin-left: 0.5rem;
+    }
+    .nav-actions .sign-in:hover, .nav-actions .sign-in:focus {
+      background: var(--accent);
+    }
+    main {
+      margin-top: var(--nav-height);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 80vh;
+      padding: 2.5rem 1rem 1rem 1rem;
+    }
+    .hero {
+      width: 100%;
+      max-width: 700px;
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .hero-title {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      letter-spacing: -1px;
+    }
+    .hero-subtitle {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    .hero-desc {
+      color: #6b6b8a;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+    .hero-form {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+    .hero-form input[type="text"] {
+      width: 320px;
+      padding: 0.9rem 1.2rem;
+      border-radius: 2rem;
+      border: 1.5px solid #d1d5db;
+      font-size: 1.1rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .hero-form input[type="text"]:focus {
+      border: 2px solid var(--accent);
+    }
+    .hero-form .search-icon {
+      margin-left: -2.2rem;
+      color: #888;
+      font-size: 1.2rem;
+      pointer-events: none;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .hero-actions button {
+      background: var(--primary);
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 2rem;
+      padding: 0.9rem 2.2rem;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .hero-actions button:hover, .hero-actions button:focus {
+      background: var(--accent);
+      outline: none;
+      box-shadow: 0 6px 32px rgba(60, 60, 90, 0.13);
+    }
+    .info-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.2rem;
+      height: 2.2rem;
+      background: #ede9fe;
+      color: var(--primary);
+      border-radius: 50%;
+      font-size: 1.3rem;
+      margin-left: 0.2rem;
+      cursor: pointer;
+      position: relative;
+      border: none;
+      outline: none;
+      transition: background 0.2s;
+    }
+    .info-icon:hover, .info-icon:focus {
+      background: #d1d5ff;
+    }
+    .tooltip {
+      display: none;
+      position: absolute;
+      left: 110%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #fff;
+      color: var(--primary);
+      border-radius: 0.75rem;
+      box-shadow: var(--shadow);
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      font-weight: 500;
+      min-width: 220px;
+      z-index: 10;
+      white-space: pre-line;
+    }
+    .info-icon:focus .tooltip,
+    .info-icon:hover .tooltip {
+      display: block;
+    }
+    .hero-step {
+      color: #6b6b8a;
+      font-size: 1.1rem;
+      margin-bottom: 2.5rem;
+    }
+    .cards-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--card-gap);
+      justify-content: center;
+      margin-bottom: 3rem;
+      width: 100%;
+      max-width: 1100px;
+    }
+    .card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      width: var(--card-width);
+      min-width: 260px;
+      max-width: 100vw;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+      transition: box-shadow 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .card:hover, .card:focus {
+      box-shadow: 0 8px 32px rgba(60, 60, 90, 0.13);
+      transform: translateY(-4px) scale(1.02);
+      outline: none;
+    }
+    .card-img {
+      width: 100%;
+      height: 120px;
+      background: #e0e7ff;
+      border-radius: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      color: var(--primary);
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+    .card-desc {
+      color: #6b6b8a;
+      font-size: 1.05rem;
+      margin-bottom: 0.2rem;
+    }
+    footer {
+      text-align: center;
+      color: #6b6b8a;
+      font-size: 1.05rem;
+      margin-bottom: 2.5rem;
+      margin-top: 2rem;
+    }
+    /* Floating Chatbot Bubble */
+    .chatbot-bubble {
+      position: fixed;
+      bottom: 2.2rem;
+      right: 2.2rem;
+      width: 64px;
+      height: 64px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      cursor: pointer;
+      z-index: 200;
+      transition: background 0.2s, box-shadow 0.2s;
+      border: none;
+      outline: none;
+    }
+    .chatbot-bubble:hover, .chatbot-bubble:focus {
+      background: var(--accent);
+      box-shadow: 0 8px 32px rgba(60, 60, 90, 0.13);
+    }
+    /* Chatbot Modal */
+    .chatbot-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(34, 34, 59, 0.18);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+    }
+    .chatbot-modal.active {
+      display: flex;
+    }
+    .chatbot-modal-content {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      width: 95vw;
+      max-width: 420px;
+      height: 80vh;
+      max-height: 600px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+    .chatbot-modal-close {
+      position: absolute;
+      top: 0.7rem;
+      right: 1.1rem;
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 1.7rem;
+      cursor: pointer;
+      z-index: 10;
+    }
+    .chatbot-modal iframe {
+      border: none;
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius);
+    }
+    @media (max-width: 900px) {
+      .cards-section {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+      }
+      .card {
+        width: 95vw;
+        min-width: unset;
+      }
+    }
+    @media (max-width: 600px) {
+      nav {
+        flex-direction: column;
+        height: auto;
+        padding: 0.5rem 0.5rem;
+      }
+      .nav-links, .nav-actions {
+        gap: 0.5rem;
+      }
+      .hero-title {
+        font-size: 2rem;
+      }
+      .hero-form input[type="text"] {
+        width: 90vw;
+        min-width: 0;
+      }
+      .cards-section {
+        gap: 1rem;
+      }
+      .chatbot-modal-content {
+        max-width: 98vw;
+        max-height: 90vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav aria-label="Main Navigation">
+    <div class="nav-left">
+      <div class="nav-logo" aria-label="Accessibility Simulation Tool Logo" tabindex="0">
+        <span aria-hidden="true">🧑‍🦽</span>
+      </div>
+      <div class="nav-links">
+        <a href="#" aria-current="page">Home</a>
+        <a href="#simulation">Simulation</a>
+        <a href="#learn">Learn</a>
+        <a href="#about">About Us</a>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <a href="#register">Register</a>
+      <a href="#signin" class="sign-in">Sign In</a>
+    </div>
+  </nav>
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 class="hero-title" id="hero-title">Accessibility Simulation Tool</h1>
+      <div class="hero-subtitle">For designers &amp; developers improving web accessibility</div>
+      <div class="hero-desc">This tool helps simulate how people with different accessibility needs experience your site. You'll choose a persona and receive tips for improvement.</div>
+      <form class="hero-form" autocomplete="off" onsubmit="return false;">
+        <label for="website-input" class="sr-only">Website Address</label>
+        <input id="website-input" type="text" placeholder="Enter your Website Address Here" aria-label="Enter your Website Address Here" />
+        <span class="search-icon" aria-hidden="true">🔍</span>
+      </form>
+      <div class="hero-actions">
+        <button type="button" id="start-sim-btn">Start Accessibility Simulation</button>
+        <span class="info-icon" tabindex="0" aria-label="Info" aria-describedby="info-tooltip">
+          ℹ️
+          <span class="tooltip" id="info-tooltip" role="tooltip">
+            This will simulate how users with impairments experience your site.
+          </span>
+        </span>
+      </div>
+      <div class="hero-step">Step 1: Choose a user persona</div>
+    </section>
+    <section class="cards-section" aria-label="Explanation Cards">
+      <article class="card" tabindex="0">
+        <div class="card-img" aria-hidden="true">🖥️</div>
+        <div class="card-title">How the Simulation Works</div>
+        <div class="card-desc">Learn how our tool simulates accessibility needs and provides actionable feedback for your website.</div>
+      </article>
+      <article class="card" tabindex="0">
+        <div class="card-img" aria-hidden="true">📱</div>
+        <div class="card-title">What is Accessibility Simulation?</div>
+        <div class="card-desc">Discover what accessibility simulation means and why it's crucial for inclusive design.</div>
+      </article>
+      <article class="card" tabindex="0">
+        <div class="card-img" aria-hidden="true">🤖</div>
+        <div class="card-title">Behind the Framework: How We Use AI</div>
+        <div class="card-desc">See how AI powers our accessibility checks and recommendations for your site.</div>
+      </article>
+    </section>
+  </main>
+  <footer>
+    This tool follows WCAG 2.2 guidelines
+  </footer>
+  <button class="chatbot-bubble" id="chatbot-bubble" aria-label="Open Chatbot" title="Open Chatbot">
+    🤖
+  </button>
+  <div class="chatbot-modal" id="chatbot-modal" role="dialog" aria-modal="true" aria-label="Accessibility Chatbot">
+    <div class="chatbot-modal-content">
+      <button class="chatbot-modal-close" id="chatbot-close" aria-label="Close Chatbot">&times;</button>
+      <iframe id="chatbot-iframe" src="http://localhost:8501?persona=low+literacy" title="Accessibility Chatbot"></iframe>
+    </div>
+  </div>
+  <script>
+    // Tooltip accessibility: allow keyboard focus
+    document.querySelectorAll('.info-icon').forEach(function(icon) {
+      icon.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          icon.querySelector('.tooltip').style.display = 'block';
+        }
+        if (e.key === 'Escape') {
+          icon.querySelector('.tooltip').style.display = 'none';
+        }
+      });
+      icon.addEventListener('blur', function() {
+        icon.querySelector('.tooltip').style.display = 'none';
+      });
+    });
+    // Chatbot modal logic
+    const chatbotBubble = document.getElementById('chatbot-bubble');
+    const chatbotModal = document.getElementById('chatbot-modal');
+    const chatbotClose = document.getElementById('chatbot-close');
+    const chatbotIframe = document.getElementById('chatbot-iframe');
+    function getPersonaParam() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('persona') || 'low+literacy';
+    }
+    function updateChatbotIframe() {
+      const persona = getPersonaParam();
+      chatbotIframe.src = `http://localhost:8501?persona=${encodeURIComponent(persona)}`;
+    }
+    chatbotBubble.addEventListener('click', function() {
+      updateChatbotIframe();
+      chatbotModal.classList.add('active');
+      chatbotClose.focus();
+    });
+    chatbotClose.addEventListener('click', function() {
+      chatbotModal.classList.remove('active');
+      chatbotBubble.focus();
+    });
+    chatbotModal.addEventListener('click', function(e) {
+      if (e.target === chatbotModal) {
+        chatbotModal.classList.remove('active');
+        chatbotBubble.focus();
+      }
+    });
+    document.addEventListener('keydown', function(e) {
+      if (chatbotModal.classList.contains('active') && e.key === 'Escape') {
+        chatbotModal.classList.remove('active');
+        chatbotBubble.focus();
+      }
+    });
+    // Screen reader only class
+    const style = document.createElement('style');
+    style.innerHTML = `.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }`;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
