@@ -39,10 +39,15 @@ else:
 st.markdown("### 🤖 AI Explanation History:")
 if ai_answers:
     for i, message in enumerate(ai_answers, 1):
-        role = message.get("role", "assistant")
-        content = message.get("content", "")
-        label = "🧑‍💬 You:" if role == "user" else "🤖 AI:"
-        st.markdown(f"**{label}** {content}")
+        try:
+            if isinstance(message, str):
+                message = ast.literal_eval(message)
+            role = message.get("role", "assistant")
+            content = message.get("content", "")
+            label = "🧑‍💬 You:" if role == "user" else "🤖 AI:"
+            st.markdown(f"**{label}** {content}")
+        except:
+            st.write(f"{i}. {message}")
 else:
     st.warning("No AI explanation history available.")
 
