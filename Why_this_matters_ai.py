@@ -1,6 +1,8 @@
 import streamlit as st
 from openai import OpenAI
 import streamlit.components.v1 as components
+import urllib.parse
+import json
 
 # --- Setup OpenAI ---
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -123,3 +125,9 @@ components.html(f"""
     sessionStorage.setItem("ai_answers", {json.dumps(st.session_state.ai_answers)});
 </script>
 """, height=0)
+# Before redirecting to preview/export
+ai_answers = json.dumps(st.session_state.chat_history)
+encoded_ai = urllib.parse.quote(ai_answers)
+
+export_url = f"https://accessibility-simulation-tool-website-export-report-ai.streamlit.app/?persona={persona}&issues={encoded_issues}&ai_answers={encoded_ai}&note={encoded_note}"
+st.markdown(f"[🔍 Preview report before sending]({export_url})")
