@@ -1,5 +1,6 @@
 import streamlit as st
 from openai import OpenAI
+import streamlit.components.v1 as components
 
 # --- Setup OpenAI ---
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -113,3 +114,11 @@ Please include a small and simple code example (HTML/CSS/ARIA or JavaScript) tha
 st.session_state.ai_answers.append(reply)
     st.markdown("### 👩‍⚕️ Assistant's Answer")
     st.write(reply)
+if "ai_answers" in st.session_state:
+    import json
+    js_script = f"""
+    <script>
+      sessionStorage.setItem("ai_answers", {json.dumps(st.session_state.ai_answers)});
+    </script>
+    """
+    components.html(js_script, height=0)
