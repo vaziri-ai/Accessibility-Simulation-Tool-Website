@@ -57,6 +57,32 @@ if note:
 else:
     st.text("No additional notes.")
 
+# Decode and load from query params
+params = st.query_params
+ai_raw = urllib.parse.unquote(params.get("ai_answers", "[]"))
+
+try:
+    ai_answers = json.loads(ai_raw)
+except:
+    try:
+        ai_answers = ast.literal_eval(ai_raw)
+    except:
+        ai_answers = []
+
+# Render chat nicely
+st.markdown("### 🤖 AI Explanation History:")
+if ai_answers:
+    for i, message in enumerate(ai_answers, 1):
+        if isinstance(message, dict):
+            role = message.get("role", "assistant")
+            content = message.get("content", "")
+            if role == "user":
+                st.markdown(f"**🧑‍💬 You:** {content}")
+            else:
+                st.markdown(f"**🤖 AI:** {content}")
+else:
+    st.info("No AI explanations found.")
+
 # ---- Export Options ----
 st.markdown("---")
 st.success("✅ Ready to export your report.")
