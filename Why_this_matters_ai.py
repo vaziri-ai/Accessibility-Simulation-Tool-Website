@@ -107,6 +107,9 @@ Please include a small and simple code example (HTML/CSS/ARIA or JavaScript) tha
     )
     reply = response.choices[0].message.content
     st.session_state.chat_history.append({"role": "assistant", "content": reply})
-
+    # Store answer in ai_answers list
+    if "ai_answers" not in st.session_state:
+        st.session_state.ai_answers = []
+st.session_state.ai_answers.append(reply)
     st.markdown("### 👩‍⚕️ Assistant's Answer")
     st.write(reply)
