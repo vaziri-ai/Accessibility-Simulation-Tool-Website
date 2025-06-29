@@ -85,6 +85,9 @@ if "chat_history" not in st.session_state:
         {"role": "system", "content": "You are an accessibility assistant for non-technical healthcare teams. Help explain WCAG rules clearly and give short, working code examples (e.g. HTML, CSS, ARIA, JS) to fix the problem. Be gentle and helpful."}
     ]
 
+if "ai_answers" not in st.session_state:
+    st.session_state.ai_answers = []
+
 user_input = st.text_input("Type your question here:")
 
 if st.button("Send") and user_input:
@@ -108,17 +111,15 @@ Please include a small and simple code example (HTML/CSS/ARIA or JavaScript) tha
     )
     reply = response.choices[0].message.content
     st.session_state.chat_history.append({"role": "assistant", "content": reply})
-    # Store answer in ai_answers list
-    if "ai_answers" not in st.session_state:
-        st.session_state.ai_answers = []
-st.session_state.ai_answers.append(reply)
+    st.session_state.ai_answers.append(reply)
+
     st.markdown("### 👩‍⚕️ Assistant's Answer")
     st.write(reply)
-if "ai_answers" in st.session_state:
-    import json
-    js_script = f"""
-    <script>
-      sessionStorage.setItem("ai_answers", {json.dumps(st.session_state.ai_answers)});
-    </script>
-    """
-    components.html(js_script, height=0)
+
+# Save AI answers to sessionStorage for access via HTML link
+import json
+components.html(f"""
+<script>
+    sessionStorage.setItem("ai_answers", {json.dumps(st.session_state.ai_answers)});
+</script>
+""", height=0)
