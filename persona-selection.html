@@ -124,10 +124,8 @@
     // Chatbot popup logic
     const chatbotBubble = document.getElementById('chatbot-bubble');
     chatbotBubble.addEventListener('click', function() {
-      const persona = document.querySelector('input[name="persona"]:checked').value;
-      const personaParam = encodeURIComponent(persona);
       window.open(
-        `https://accessibility-simulation-tool-website-chat-bot.streamlit.app/?persona=${personaParam}`,
+        'https://accessibility-simulation-tool-6rehzmgdov2tj5evhpoujs.streamlit.app/',
         'chatbotWindow',
         'width=400,height=650,resizable=yes,scrollbars=yes,status=no,noopener,noreferrer'
       );

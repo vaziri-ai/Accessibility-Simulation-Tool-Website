@@ -112,28 +112,28 @@
     // --- Detected Issues by Persona ---
     const personaIssues = {
       'Low Literacy – Age 65+': [
-        { label: 'Complex wording' },
-        { label: 'Missing icons for categories' }
+        { label: 'Complex wording', rule: 'WCAG 3.1.5 Reading Level' },
+        { label: 'Missing icons for categories', rule: 'WCAG 1.1.1 Non-text Content' }
       ],
       'Cognitive Load': [
-        { label: 'Too many buttons' },
-        { label: 'Overloaded dropdowns' }
+        { label: 'Too many buttons', rule: 'WCAG 2.4.6 Headings and Labels' },
+        { label: 'Overloaded dropdowns', rule: 'WCAG 3.2.4 Consistent Identification' }
       ],
       'Visual Impairment': [
-        { label: 'Low contrast text' },
-        { label: 'Tiny clickable icons' }
+        { label: 'Low contrast text', rule: 'WCAG 1.4.3 Contrast (Minimum)' },
+        { label: 'Tiny clickable icons', rule: 'WCAG 2.5.5 Target Size' }
       ],
       'Autism Spectrum': [
-        { label: 'Distracting background' },
-        { label: 'Inconsistent icon use' }
+        { label: 'Distracting background', rule: 'WCAG 2.3.1 Three Flashes or Below Threshold' },
+        { label: 'Inconsistent icon use', rule: 'WCAG 3.2.4 Consistent Identification' }
       ],
       'Motor Impairment': [
-        { label: 'Small touch targets' },
-        { label: 'No focus outline' }
+        { label: 'Small touch targets', rule: 'WCAG 2.5.5 Target Size' },
+        { label: 'No focus outline', rule: 'WCAG 2.4.7 Focus Visible' }
       ],
       'Non-Native Speakers': [
-        { label: 'Dutch-only content' },
-        { label: 'Difficult vocabulary' }
+        { label: 'Dutch-only content', rule: 'WCAG 3.1.1 Language of Page' },
+        { label: 'Difficult vocabulary', rule: 'WCAG 3.1.5 Reading Level' }
       ]
     };
     function getPersonaKey(p) {
@@ -146,22 +146,26 @@
     const issuesToShow = personaKey ? personaIssues[personaKey] : [];
     const issuesListDiv = document.getElementById('persona-issues-list');
     if (issuesToShow.length) {
-      issuesListDiv.innerHTML = issuesToShow.map((issue, idx) => `
+      issuesListDiv.innerHTML = issuesToShow.map((issue, idx) => {
+        const selectedPersona = persona;
+        const selectedIssue = issue.rule;
+        return `
         <div class="graphic-issue-row">
           <span class="graphic-issue-icon" aria-hidden="true">❗️</span>
           <div class="graphic-issue-content">
             <div class="graphic-issue-title">${issue.label}</div>
-            <a class="graphic-issue-link" href="#" data-why-matters-link="true" data-idx="${idx}" data-issue-label="${encodeURIComponent(issue.label)}">Why it matters?</a>
+            <a class="graphic-issue-link" href="#" data-why-matters-link="true" data-persona="${encodeURIComponent(selectedPersona)}" data-rule="${encodeURIComponent(selectedIssue)}">Why This Matters?</a>
           </div>
         </div>
-      `).join('');
-      // Add window.open handler for all 'Why it matters?' links
+      `;
+      }).join('');
+      // Add window.open handler for all 'Why This Matters?' links
       document.querySelectorAll('[data-why-matters-link]').forEach(link => {
         link.addEventListener('click', function(e) {
           e.preventDefault();
-          const issueLabel = link.getAttribute('data-issue-label');
-          const personaParam = encodeURIComponent(persona || 'low literacy');
-          const url = `https://accessibility-simulation-tool-twhc4g6llusz9katkjqn2a.streamlit.app/?persona=${personaParam}&issue=${issueLabel}`;
+          const personaParam = link.getAttribute('data-persona');
+          const ruleParam = link.getAttribute('data-rule');
+          const url = `https://accessibility-simulation-tool-website-why-this-matters-ai.streamlit.app/?persona=${personaParam}&rule=${ruleParam}`;
           window.open(
             url,
             'whyItMattersWindow',
@@ -176,9 +180,8 @@
     // Chatbot popup logic (like other pages)
     const chatbotBubble = document.getElementById('chatbot-bubble');
     chatbotBubble.addEventListener('click', function() {
-      const personaParam = encodeURIComponent(persona || 'low literacy');
       window.open(
-        `https://accessibility-simulation-tool-website-chat-bot.streamlit.app/?persona=${personaParam}`,
+        'https://accessibility-simulation-tool-6rehzmgdov2tj5evhpoujs.streamlit.app/',
         'chatbotWindow',
         'width=400,height=650,resizable=yes,scrollbars=yes,status=no,noopener,noreferrer'
       );

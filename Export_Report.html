@@ -34,11 +34,12 @@
       </div>
     </section>
     <section aria-label="Add Message to Report" style="display:flex;flex-direction:column;align-items:center;gap:1.2rem;max-width:480px;margin:0 auto 2rem auto;">
-      <label for="report-message" style="font-size:1.1rem;font-weight:600;margin-bottom:0.3rem;">Write your message here to add to your report</label>
-      <textarea id="report-message" aria-label="Write your message here to add to your report" placeholder="Write your message here to add to your report" rows="4" style="width:100%;max-width:400px;min-width:220px;padding:1rem;border-radius:1rem;border:1.5px solid #d1d5db;font-size:1.1rem;resize:vertical;"></textarea>
-      <div style="display:flex;align-items:center;gap:0.6rem;width:100%;max-width:400px;">
-        <input type="checkbox" id="include-ai-summary" checked aria-label="Include AI Summary in Report" style="width:1.2rem;height:1.2rem;accent-color:#6c47d7;">
-        <label for="include-ai-summary" style="font-size:1.05rem;">Include AI Summary in Report</label>
+      <label for="note-input" style="font-size:1.1rem;font-weight:600;margin-bottom:0.3rem;">Write your message here to add to your report</label>
+      <textarea id="note-input" aria-label="Write your message here to add to your report" placeholder="Write your message here to add to your report" rows="4" style="width:100%;max-width:400px;min-width:220px;padding:1rem;border-radius:1rem;border:1.5px solid #d1d5db;font-size:1.1rem;resize:vertical;"></textarea>
+      <a id="preview-link" href="export-report.html" target="_blank" class="secondary-btn" style="background:none;color:#3734a9;text-decoration:underline;font-size:1.05rem;padding:0.3rem 0.7rem;border:none;box-shadow:none;" aria-label="Preview report before sending">Preview report before sending</a>
+      <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;width:100%;max-width:400px;">
+        <input type="checkbox" id="summary-checkbox" checked aria-label="Include AI Summary in Report" style="width:1.2rem;height:1.2rem;accent-color:#6c47d7;">
+        <label for="summary-checkbox" style="font-size:1.05rem;">Include AI Summary in Report</label>
       </div>
     </section>
     <section aria-label="System Feedback" style="text-align:center;margin-bottom:2rem;">
@@ -51,7 +52,6 @@
         <button class="primary-btn" style="font-size:1.25rem;padding:1.2rem 2.5rem;border-radius:2rem;min-width:210px;" aria-label="Email Report">Email Report</button>
         <button class="primary-btn" style="font-size:1.25rem;padding:1.2rem 2.5rem;border-radius:2rem;min-width:210px;" aria-label="Run Another Simulation">Run Another Simulation</button>
       </div>
-      <a href="#" class="secondary-btn" style="background:none;color:#3734a9;text-decoration:underline;font-size:1.05rem;padding:0.3rem 0.7rem;border:none;box-shadow:none;" aria-label="Preview report before sending">Preview report before sending</a>
     </section>
   </main>
   <footer style="text-align:center;color:#888;font-size:1.05rem;margin:2.5rem 0 1rem 0;">
@@ -64,6 +64,69 @@
       return urlParams.get('persona') || 'Cognitive Load';
     }
     document.getElementById('persona-name').textContent = getPersonaFromURL();
+
+    const chatbotBubble = document.getElementById('chatbot-bubble');
+    if (chatbotBubble) {
+      chatbotBubble.addEventListener('click', function() {
+        window.open(
+          'https://accessibility-simulation-tool-6rehzmgdov2tj5evhpoujs.streamlit.app/',
+          'chatbotWindow',
+          'width=400,height=650,resizable=yes,scrollbars=yes,status=no,noopener,noreferrer'
+        );
+      });
+    }
+
+    // Export Report button logic
+    function openExportReport() {
+      const personaRaw = getPersonaFromURL();
+      const issuesRaw = window.detectedIssues || ['Long search placeholder text', 'Unclear button label'];
+      let chatHistoryRaw;
+      if (typeof storedMessagesArray !== 'undefined') {
+        chatHistoryRaw = storedMessagesArray;
+      } else if (sessionStorage.getItem("ai_answers")) {
+        chatHistoryRaw = JSON.parse(sessionStorage.getItem("ai_answers"));
+      } else {
+        chatHistoryRaw = [
+          { role: 'user', content: 'What is the issue?' },
+          { role: 'assistant', content: 'Long search placeholder text can overwhelm users.' }
+        ];
+      }
+      const noteRaw = document.getElementById('note-input').value;
+      const includeSummary = document.getElementById('summary-checkbox').checked;
+      const persona = encodeURIComponent(personaRaw);
+      const issues = encodeURIComponent(JSON.stringify(issuesRaw));
+      const aiAnswers = encodeURIComponent(JSON.stringify(chatHistoryRaw));
+      const note = encodeURIComponent(noteRaw);
+      const exportUrl = `https://accessibility-simulation-tool-website-export-report-ai.streamlit.app/?persona=${persona}&issues=${issues}&ai_answers=${aiAnswers}&note=${note}&include_summary=${includeSummary ? 'true' : 'false'}`;
+      window.location.href = exportUrl;
+    }
+    document.querySelector('[aria-label="Download PDF"]').addEventListener('click', function(e) {
+      e.preventDefault();
+      openExportReport();
+    });
+    document.getElementById("preview-link").addEventListener("click", function (e) {
+      const personaRaw = sessionStorage.getItem("persona");
+      const issuesRaw = sessionStorage.getItem("issues");
+      let chatHistoryRaw;
+      if (typeof storedMessagesArray !== 'undefined') {
+        chatHistoryRaw = storedMessagesArray;
+      } else if (sessionStorage.getItem("ai_answers")) {
+        chatHistoryRaw = JSON.parse(sessionStorage.getItem("ai_answers"));
+      } else {
+        chatHistoryRaw = [
+          { role: 'user', content: 'What is the issue?' },
+          { role: 'assistant', content: 'Long search placeholder text can overwhelm users.' }
+        ];
+      }
+      const noteRaw = document.getElementById("note-input").value || "";
+      const includeSummary = document.getElementById("summary-checkbox").checked;
+      const persona = encodeURIComponent(personaRaw);
+      const issues = encodeURIComponent(issuesRaw);
+      const aiAnswers = encodeURIComponent(JSON.stringify(chatHistoryRaw));
+      const note = encodeURIComponent(noteRaw);
+      const exportUrl = `https://accessibility-simulation-tool-website-export-report-ai.streamlit.app/?persona=${persona}&issues=${issues}&ai_answers=${aiAnswers}&note=${note}&include_summary=${includeSummary ? 'true' : 'false'}`;
+      this.href = exportUrl;
+    });
   </script>
 </body>
 </html> 
