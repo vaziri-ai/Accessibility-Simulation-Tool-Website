@@ -1,7 +1,25 @@
 import streamlit as st
 import urllib.parse
 import ast
+import json
 
+query_params = st.query_params
+persona = query_params.get("persona", "Unknown")
+issues = json.loads(query_params.get("issues", "[]"))
+ai_answers = json.loads(query_params.get("ai_answers", "[]"))
+note = query_params.get("note", "")
+
+
+try:
+    ai_answers = json.loads(ai_answers_raw)
+except:
+    ai_answers = []
+
+st.write("### Export Report Summary")
+st.markdown(f"**Persona:** {persona}")
+for i, answer in enumerate(ai_answers, 1):
+    st.markdown(f"**AI Answer {i}:**")
+    st.write(answer)
 st.set_page_config(page_title="Accessibility Report", layout="centered")
 st.title("📤 Export Accessibility Simulation Report")
 
