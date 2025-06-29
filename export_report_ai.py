@@ -1,39 +1,22 @@
 import streamlit as st
 import urllib.parse
-import ast
 import json
+import ast
 
-query_params = st.query_params
-persona = query_params.get("persona", "Unknown")
-issues = json.loads(query_params.get("issues", "[]"))
-ai_answers = json.loads(query_params.get("ai_answers", "[]"))
-note = query_params.get("note", "")
-
-
-try:
-    ai_answers = json.loads(ai_answers_raw)
-except:
-    ai_answers = []
-
-st.write("### Export Report Summary")
-st.markdown(f"**Persona:** {persona}")
-for i, answer in enumerate(ai_answers, 1):
-    st.markdown(f"**AI Answer {i}:**")
-    st.write(answer)
 st.set_page_config(page_title="Accessibility Report", layout="centered")
 st.title("📤 Export Accessibility Simulation Report")
 
-# ---- URL Parameter Parsing ----
+# ---- Extract Query Parameters ----
 query_params = st.query_params
 
-# Decode and sanitize
+# Decode and sanitize URL parameters
 persona = urllib.parse.unquote(query_params.get("persona", "Unknown"))
 issues_param = urllib.parse.unquote(query_params.get("issues", "[]"))
 answers_param = urllib.parse.unquote(query_params.get("ai_answers", "[]"))
 note = urllib.parse.unquote(query_params.get("note", ""))
 include_summary = query_params.get("include_summary", "false") == "true"
 
-# Safely evaluate lists
+# Safely evaluate list values
 try:
     issues = ast.literal_eval(issues_param)
 except:
@@ -44,29 +27,32 @@ try:
 except:
     ai_answers = []
 
-# ---- Display Report Content ----
+# ---- Render Report ----
 st.markdown(f"### 👤 Persona: `{persona}`")
 
-st.markdown("### ⚠️ Issues Detected:")
+st.markdown("### ⚠️ Detected Issues:")
 if issues:
     st.markdown("<ul>" + "".join([f"<li>{i}</li>" for i in issues]) + "</ul>", unsafe_allow_html=True)
 else:
-    st.info("No issues were provided.")
+    st.info("No issues provided.")
 
-st.markdown("### 📘 AI Explanations:")
+st.markdown("### 🤖 AI Explanation History:")
 if ai_answers:
-    for i, answer in enumerate(ai_answers, 1):
-        st.markdown(f"**{i}.** {answer}", unsafe_allow_html=True)
+    for i, message in enumerate(ai_answers, 1):
+        role = message.get("role", "assistant")
+        content = message.get("content", "")
+        label = "🧑‍💬 You:" if role == "user" else "🤖 AI:"
+        st.markdown(f"**{label}** {content}")
 else:
-    st.warning("No AI explanations were included.")
+    st.warning("No AI explanation history available.")
 
+st.markdown("### 📝 Additional Note:")
 if note:
-    st.markdown("### ✏️ Additional Note:")
     st.code(note)
 else:
-    st.markdown("### ✏️ No additional notes.")
+    st.text("No additional notes.")
 
-# Optional PDF + Email buttons
+# ---- Export Options ----
 st.markdown("---")
 st.success("✅ Ready to export your report.")
 st.button("📥 Download PDF (coming soon)", disabled=True)
